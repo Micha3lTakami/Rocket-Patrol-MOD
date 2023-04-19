@@ -7,6 +7,9 @@ class Rocket extends Phaser.GameObjects.Sprite {
         scene.add.existing(this);
         this.isFiring = false; // rocket firing status
         this.moveSpeed = 2;    // # of pixels per frame
+
+        // add rocket sfx on spawn
+        this.sfxRocket = scene.sound.add('sfx_rocket');
     }
 
     update() {
@@ -19,10 +22,11 @@ class Rocket extends Phaser.GameObjects.Sprite {
                 this.x += this.moveSpeed;
             }
         }
-        // fire button
-        if(Phaser.Input.Keyboard.JustDown(keyF)) {
+        // rocket fire button
+        if (Phaser.Input.Keyboard.JustDown(keyF) && !this.isFiring) {
             this.isFiring = true;
-        }
+            this.sfxRocket.play(); 
+          }
 
         // if fired, move up!
         if(this.isFiring && this.y >= borderUISize * 3 + borderPadding){
@@ -31,8 +35,14 @@ class Rocket extends Phaser.GameObjects.Sprite {
 
         // reset on miss
         if(this.y <= borderUISize * 3 + borderPadding) {
-            this.isFiring = false;
-            this.y = game.config.height - borderUISize - borderPadding;
+            this.reset();
         }
+    }
+
+    // reset rocket to starting "ground" position
+    reset() {
+        this.isFiring = false;
+        this.y = game.config.height - borderUISize - borderPadding;
+
     }
 }
