@@ -5,5 +5,5 @@ A playable browser version is accessible using this link!
 
 https://micha3ltakami.github.io/Rocket-Patrol/
 
-Michael Takami
+Michael Takami<br>
 2023
