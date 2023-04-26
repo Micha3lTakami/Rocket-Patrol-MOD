@@ -1,3 +1,14 @@
+// Michael Takami
+// Galaxy Patrol
+// Time Spent:
+// Mods(5):
+// 
+// Mods(10):
+//
+// Mods(15):
+//
+// Sources:
+//
 let config = {
     type: Phaser.AUTO,
     width: 640,
