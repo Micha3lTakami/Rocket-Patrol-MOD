@@ -1,6 +1,7 @@
 class Play extends Phaser.Scene {
     constructor() {
         super("playScene");
+        this.p1HighScore = 0; // initalize high score variable
     }
 
     // preload()
@@ -60,14 +61,53 @@ class Play extends Phaser.Scene {
             fontSize: '28px',
             backgroundColor: '#F3B141',
             color: '#843605',
-            allign: 'right',
+            align: 'right',
             padding: {
                 top: 5,
                 bottom: 5,
             },
             fixedWidth: 100
-        }
+        } 
         this.scoreLeft = this.add.text(borderUISize + borderPadding, borderUISize + borderPadding*2, this.p1Score, scoreConfig);
+       
+        // MOD: FIRE UI config
+        let fireConfig = {
+            fontFamily: 'Courier',
+            fontSize: '28px',
+            backgroundColor: '#F3B141',
+            color: '#843605',
+            align: 'center',
+            padding: {
+                top: 5,
+                bottom: 5,
+            },
+            fixedWidth: 95
+        }
+        this.fireMiddle = this.add.text(borderUISize + borderPadding*23, borderUISize + borderPadding*2, 'FIRE', fireConfig);
+        this.fireMiddle.alpha = 0; // sets alpha to 0 as to not show on start
+        
+        // MOD: high score UI config
+        
+        let HighScoreConfig = {
+            fontFamily: 'Courier',
+            fontSize: '20px',
+            backgroundColor: '#F3B141',
+            color: '#843605',
+            align: 'left',
+            padding: {
+                top: 5,
+                bottom: 5,
+            },
+            fixedWidth: 200
+        }
+        if (this.p1Score > this.highScoreRight) {
+            this.p1HighScore = this.p1Score;
+            this.highScoreRight.setText('New High Score: ' + this.p1HighScore);
+        }
+        else{
+        this.highScoreRight = this.add.text(borderUISize + borderPadding*35, borderUISize + borderPadding*2.5, 'HIGH SCORE: ' + this.p1HighScore, HighScoreConfig);
+        }
+        this.highScoreRight.alpha = 1; // sets alpha to 0 as to not show on start
 
         // initialize GAME OVER state
         this.gameOver = false;
@@ -78,7 +118,13 @@ class Play extends Phaser.Scene {
             this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', scoreConfig).setOrigin(0.5);
             this.add.text(game.config.width/2, game.config.height/2 + 64, 'Press (R) to Restart or ← for menu', scoreConfig).setOrigin(0.5);
             this.gameOver = true;
+                            // update high score on game over
+                            if(this.gameOver && this.p1Score > this.p1HighScore){
+                                this.p1HighScore = this.p1Score;
+                                this.highScoreRight = this.add.text(borderUISize + borderPadding*35, borderUISize + borderPadding*2.5, 'HIGH SCORE: ' + this.p1HighScore, HighScoreConfig);
+                            }
         }, null, this);  
+
     }
 
     // update()
@@ -96,6 +142,14 @@ class Play extends Phaser.Scene {
 
         // update background tile sprite
         this.starfield.tilePositionX -= 4;
+
+        // MOD: 'FIRE' UI text
+        if(this.p1Rocket.isFiring == true){
+            this.fireMiddle.alpha = 1;
+        }
+        else if(this.p1Rocket.isFiring == false){
+            this.fireMiddle.alpha = 0;
+        }
 
         // sprite updates while gameOver is not true(triggered)
         if(!this.gameOver) {
@@ -135,6 +189,8 @@ class Play extends Phaser.Scene {
     // shipExplode()
     // handles ship + rocket collision event
     shipExplode(ship){
+        // MOD: New ship explosion noises and randomly plays 1/4
+        let soundKeys = ['sfx_explosion','sfx_explosion2', 'sfx_explosion3', 'sfx_explosion4'];
         ship.alpha = 0; // make hit ship invisible
         
         // create explosion at ship position
@@ -151,7 +207,8 @@ class Play extends Phaser.Scene {
         this.scoreLeft.text = this.p1Score;
         
         // trigger sound on explosion
-        this.sound.play('sfx_explosion');
+        let randomSoundKey = Phaser.Utils.Array.GetRandom(soundKeys); // randomly selects sound to play
+        this.sound.play(randomSoundKey);
 
     }
 }

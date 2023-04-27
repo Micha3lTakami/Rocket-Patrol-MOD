@@ -1,14 +1,25 @@
 // Michael Takami
 // Galaxy Patrol
 // Time Spent:
+
 // Mods(5):
-// 
+// - allow player to control rocket after firing 
+// - 'FIRE' UI text appears when rocket firing
+// - High score added to UI
+
 // Mods(10):
-//
+// - four new sounds added which randomly trigger on explosion
+// 
+
 // Mods(15):
 //
+
+// Other Mods:
+// added a web icon(.ico)
+
 // Sources:
-//
+// Phaser API documentation
+
 let config = {
     type: Phaser.AUTO,
     width: 640,
