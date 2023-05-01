@@ -6,7 +6,7 @@ class Rocket extends Phaser.GameObjects.Sprite {
         // add object to existing scene 
         scene.add.existing(this);
         this.isFiring = false; // rocket firing status
-        this.moveSpeed = 2;    // # of pixels per frame
+        this.moveSpeed = 3;    // # of pixels per frame
 
         // add rocket sfx on spawn
         this.sfxRocket = scene.sound.add('sfx_rocket');
