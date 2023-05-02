@@ -6,20 +6,21 @@ class Menu extends Phaser.Scene {
     // preload()
     // pre-load audio assets
     preload() {
-        this.load.audio('sfx_select', './assets/blip_select12.wav');
+        /*this.load.audio('sfx_select', './assets/blip_select12.wav');
         this.load.audio('sfx_explosion', './assets/explosion38.wav');
         this.load.audio('sfx_rocket', './assets/rocket_shot.wav');
-        // MOD: added explosion sounds
+        // MOD: added explosion sounds + menu music 
         this.load.audio('sfx_explosion2', './assets/wilhelm.wav');
         this.load.audio('sfx_explosion3', './assets/explosion3.wav');
-        this.load.audio('sfx_explosion4', './assets/explosion4.wav');
+        this.load.audio('sfx_explosion4', './assets/explosion4.wav');*/
+      
         
     }
 
     // create()
     // create menu scene
     create() {
-        
+        this.sound.play('menuMusic');
         // menu text configuration
         let menuConfig = {
             fontFamily: 'Courier',
@@ -56,6 +57,7 @@ class Menu extends Phaser.Scene {
             gameTimer: 60000    
           }
           this.sound.play('sfx_select');
+          setTimeout(() => { this.sound.pauseAll(); }, 250);
           this.scene.start('playScene');    
         }
         if (Phaser.Input.Keyboard.JustDown(keyRIGHT)) {
@@ -65,6 +67,7 @@ class Menu extends Phaser.Scene {
             gameTimer: 45000    
           }
           this.sound.play('sfx_select');
+          setTimeout(() => { this.sound.pauseAll(); }, 250);
           this.scene.start('playScene');    
         }
       }
