@@ -9,13 +9,14 @@
 
 // Mods(10):
 // - four new sounds added which randomly trigger on explosion
-// 
+// -
 
 // Mods(15):
 //
 
 // Other Mods:
 // added a web icon(.ico)
+// added a loading bar to track asset loading
 
 // Sources:
 // Phaser API documentation

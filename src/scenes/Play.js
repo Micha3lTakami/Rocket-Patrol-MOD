@@ -157,7 +157,7 @@ class Play extends Phaser.Scene {
         // update high score
         if (this.gameOver && this.p1Score > this.p1HighScore) {
             this.p1HighScore = this.p1Score;
-            this.highScoreRight.setText('High Score: ' + this.p1HighScore);
+            this.highScoreRight.setText('HIGH SCORE: ' + this.p1HighScore);
         }
 
         // check key input for restart
