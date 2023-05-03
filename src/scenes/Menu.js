@@ -22,13 +22,6 @@ class Menu extends Phaser.Scene {
             },
             fixedWidth: 0
         }
-        // show menu text
-        
-        /*this.add.text(game.config.width/2, game.config.height/2, 'Use ←→ arrows to move and (F) to fire', menuConfig).setOrigin(0.5);
-        menuConfig.backgroundColor = '#00FF00';
-        menuConfig.color = '#000';
-        this.add.text(game.config.width/2, game.config.height/2 + borderUISize + borderPadding, 'Press ← for  Novice or  → for Expert', menuConfig).setOrigin(0.5);*/
-
         
         let menuIC  = this.add.image(game.config.width/2, game.config.height/2 + borderUISize + borderPadding - 5, 'MenuIcon').setOrigin(0.5);
         menuIC.setScale(0.4);
@@ -53,6 +46,30 @@ class Menu extends Phaser.Scene {
     // update()
     // menu update function
     update() {
+        if(game.settings.multiplayer == false){
+          if (Phaser.Input.Keyboard.JustDown(keyLEFT)) {
+            // easy mode
+            game.settings = {
+              spaceshipSpeed: 3,
+              gameTimer: 60000    
+            }
+            this.sound.play('sfx_select');
+            setTimeout(() => { this.sound.pauseAll(); }, 250);
+            this.scene.start('playScene');    
+          }
+          if (Phaser.Input.Keyboard.JustDown(keyRIGHT)) {
+            // hard mode
+            game.settings = {
+              spaceshipSpeed: 4,
+              gameTimer: 45000    
+            }
+            this.sound.play('sfx_select');
+            setTimeout(() => { this.sound.pauseAll(); }, 250);
+            this.scene.start('playScene');    
+          }
+        }
+      
+      else if(game.settings.multiplayer == true){
         if (Phaser.Input.Keyboard.JustDown(keyLEFT)) {
           // easy mode
           game.settings = {
@@ -61,7 +78,7 @@ class Menu extends Phaser.Scene {
           }
           this.sound.play('sfx_select');
           setTimeout(() => { this.sound.pauseAll(); }, 250);
-          this.scene.start('playScene');    
+          this.scene.start('playScene2');    
         }
         if (Phaser.Input.Keyboard.JustDown(keyRIGHT)) {
           // hard mode
@@ -71,8 +88,8 @@ class Menu extends Phaser.Scene {
           }
           this.sound.play('sfx_select');
           setTimeout(() => { this.sound.pauseAll(); }, 250);
-          this.scene.start('playScene');    
+          this.scene.start('playScene2');    
         }
-      }
-    
+      } 
+    }
 }

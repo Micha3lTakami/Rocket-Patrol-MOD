@@ -29,7 +29,9 @@ class Loader extends Phaser.Scene {
         this.load.image('arrowLeft', './assets/arrowLeft.png');
         this.load.image('MenuText', './assets/galaxyPatrolText.png');
         this.load.image('MenuIcon', './assets/galaxyPatrolMenuART.png')
+        this.load.image('alien', './assets/alienship.png');
         this.load.image('rocket', './assets/rocket.png');
+        this.load.image('redRocket', './assets/redRocket.png');
         this.load.image('spaceship', './assets/spaceship.png');
         this.load.image('starfield', './assets/starfield.png');
         this.load.image('logo', './assets/Logo.png');

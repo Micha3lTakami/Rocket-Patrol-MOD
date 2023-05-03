@@ -38,12 +38,16 @@ class Start extends Phaser.Scene {
     // menu update function
     update() {
         if (Phaser.Input.Keyboard.JustDown(key1)) {
-          console.log("one player cuh")
+          game.settings = {
+            multiplayer : false
+          }
           this.sound.play('sfx_select');
           this.scene.start('menuScene');    
         }
         if (Phaser.Input.Keyboard.JustDown(key2)) {
-          console.log("two player cuh");
+          game.settings = {
+            multiplayer : true
+          }
           this.sound.play('sfx_select');
           this.scene.start('menuScene');    
         }

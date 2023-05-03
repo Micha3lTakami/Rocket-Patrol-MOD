@@ -1,9 +1,14 @@
-class Play extends Phaser.Scene {
+class Play2 extends Phaser.Scene {
     constructor() {
-        super("playScene");
+        super("playScene2");
         this.p1HighScore = 0; // initalize high score variable
+        this.p1HighScore = 0; // initalize high score variable
+        this.logo = null;
+        this.multp1Rocket = null;
+        this.multp2Rocket = null;
+        this.p1Rocket = null;
+        this.p2Score = 0;
     }
-
 
     // create()
     // create objects on play scene
@@ -19,15 +24,19 @@ class Play extends Phaser.Scene {
         this.add.rectangle(0, game.config.height - borderUISize, game.config.width, borderUISize, 0xFFFFFF).setOrigin(0, 0);
         this.add.rectangle(0, 0, borderUISize, game.config.height, 0xFFFFFF).setOrigin(0, 0);
         this.add.rectangle(game.config.width - borderUISize, 0, borderUISize, game.config.height, 0xFFFFFF).setOrigin(0, 0);
-
-        // MOD: added logo to UI
-        var logo = this.add.sprite(game.config.width - (4.23*borderUISize) , borderUISize + 55, 'logo');
-        logo.setScale(0.485);
         
-        // add rocket
-        this.p1Rocket = new Rocket(this, game.config.width/2, game.config.height - borderUISize - borderPadding, 'rocket').setOrigin(0.5, 0);
+        // MOD: added logo to UI
+        if(game.settings.multiplayer = false){
+            var logo = this.add.sprite(game.config.width - (4.23*borderUISize) , borderUISize + 55, 'logo');
+            logo.setScale(0.485);
+        }
+        
+        // add rocket(s)
+        this.multp1Rocket = new MultiplayerRocket(this, game.config.width/2 + 10, game.config.height - borderUISize - borderPadding, 'rocket', 1).setOrigin(0.5, 0);
+        this.multp2Rocket = new MultiplayerRocket(this, game.config.width/2, game.config.height - borderUISize - borderPadding, 'redRocket', 2).setOrigin(0.5, 0);
+        this.p2Score = 0;
 
-        // add  spaceships
+        // add spaceships
         this.alien01 = new Alienship(this, game.config.width - 65, borderUISize*3.4, 'alien', 0, 50).setOrigin(0,0);
         this.alien01.setScale(1.35);
         this.ship01 = new Spaceship(this, game.config.width + borderUISize*6, borderUISize*4.5, 'spaceship', 0, 30).setOrigin(0,0);
@@ -39,6 +48,9 @@ class Play extends Phaser.Scene {
         keyR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
         keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
         keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+        keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+        keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+        keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 
         // animation configuration
         this.anims.create({
@@ -65,6 +77,22 @@ class Play extends Phaser.Scene {
         } 
         this.scoreLeft = this.add.text(borderUISize + borderPadding, borderUISize + borderPadding*2, this.p1Score, scoreConfig);
        
+        if(game.settings.multiplayer = true){
+            // display score for player 2
+            let score2Config = {
+                fontFamily: 'Courier',
+                fontSize: '25px',
+                backgroundColor: '#FC5603',
+                color: '#843605',
+                align: 'right',
+                padding: {
+                    top: 5,
+                    bottom: 5,
+                },
+                fixedWidth: 100
+            } 
+            this.scoreRight = this.add.text(borderUISize + borderPadding*43 , borderUISize + 37, this.p2Score, score2Config);
+        }
         // MOD: FIRE UI config
         let fireConfig = {
             fontFamily: 'Courier',
@@ -149,7 +177,10 @@ class Play extends Phaser.Scene {
             this.p1HighScore = this.p1Score;
             this.highScoreRight.setText('HIGH SCORE: ' + this.p1HighScore);
         }
-
+        else if(this.gameOver && this.game.settings.multiplayer == true && this.p2Score > this.p1HighScore){
+            this.p1HighScore = this.p2Score;
+            this.highScoreRight.setText('HIGH SCORE: ' + this.p1HighScore);
+        }
         // check key input for restart
         if(this.gameOver && Phaser.Input.Keyboard.JustDown(keyR)){
             this.scene.restart();
@@ -164,16 +195,31 @@ class Play extends Phaser.Scene {
         this.starfield.tilePositionX -= 5;
 
         // MOD: 'FIRE' UI text
-        if(this.p1Rocket.isFiring == true){
-            this.fireMiddle.alpha = 1;
+        if(this.game.settings.multiplayer == false){   
+            if(this.p1Rocket.isFiring == true){
+                this.fireMiddle.alpha = 1;
+            }
+            else if(this.p1Rocket.isFiring == false){
+                this.fireMiddle.alpha = 0;
+            }
         }
-        else if(this.p1Rocket.isFiring == false){
-            this.fireMiddle.alpha = 0;
+        else if(this.game.settings.multiplayer == true){
+            if(this.multp1Rocket.isFiring == true || this.multp2Rocket.isFiring == true){
+                this.fireMiddle.alpha = 1;
+            }
+            else if(this.multp1Rocket.isFiring == false || this.multp2Rocket.isFiring == false){
+                this.fireMiddle.alpha = 0;
+            }
         }
 
         // sprite updates while gameOver is not true(triggered)
         if(!this.gameOver) {
-            this.p1Rocket.update();
+            if(game.settings.multiplayer == true){
+                this.multp1Rocket.update();
+                this.multp2Rocket.update();
+            }else if(game.settings.multiplayer == false){
+                this.p1Rocket.update();
+            }
             this.alien01.update();
             this.ship01.update();
             this.ship02.update();
@@ -181,17 +227,57 @@ class Play extends Phaser.Scene {
         }
 
         // check for collisions
-        if(this.checkCollision(this.p1Rocket, this.ship03)){
-            this.p1Rocket.reset();
-            this.shipExplode(this.ship03);
+        if(game.settings.multiplayer = false){
+            if(this.checkCollision(this.p1Rocket, this.alien01)){
+                this.p1Rocket.reset();
+                this.shipExplode(this.alien01);
+            }
+            if(this.checkCollision(this.p1Rocket, this.ship03)){
+                this.p1Rocket.reset();
+                this.shipExplode(this.ship03);
+            }
+            if(this.checkCollision(this.p1Rocket, this.ship02)){
+                this.p1Rocket.reset();
+                this.shipExplode(this.ship02);
+            }
+            if(this.checkCollision(this.p1Rocket, this.ship01)){
+                this.p1Rocket.reset();
+                this.shipExplode(this.ship01);
+            }
         }
-        if(this.checkCollision(this.p1Rocket, this.ship02)){
-            this.p1Rocket.reset();
-            this.shipExplode(this.ship02);
-        }
-        if(this.checkCollision(this.p1Rocket, this.ship01)){
-            this.p1Rocket.reset();
-            this.shipExplode(this.ship01);
+        else if(game.settings.multiplayer = true){
+            if(this.checkCollision(this.multp1Rocket, this.alien01)){
+                this.multp1Rocket.reset();
+                this.multishipExplode(this.multp1Rocket, this.alien01);
+            }
+            if(this.checkCollision(this.multp1Rocket, this.ship03)){
+                this.multp1Rocket.reset();
+                this.multishipExplode(this.multp1Rocket, this.ship03);
+            }
+            if(this.checkCollision(this.multp1Rocket, this.ship02)){
+                this.multp1Rocket.reset();
+                this.multishipExplode(this.multp1Rocket, this.ship02);
+            }
+            if(this.checkCollision(this.multp1Rocket, this.ship01)){
+                this.multp1Rocket.reset();
+                this.multishipExplode(this.multp1Rocket,this.ship01);
+            }
+            if(this.checkCollision(this.multp2Rocket, this.alien01)){
+                this.multp2Rocket.reset();
+                this.multishipExplode(this.multp2Rocket, this.alien01);
+            }
+            if(this.checkCollision(this.multp2Rocket, this.ship03)){
+                this.multp2Rocket.reset();
+                this.multishipExplode(this.multp2Rocket, this.ship03);
+            }
+            if(this.checkCollision(this.multp2Rocket, this.ship02)){
+                this.multp2Rocket.reset();
+                this.multishipExplode(this.multp2Rocket, this.ship02);
+            }
+            if(this.checkCollision(this.multp2Rocket, this.ship01)){
+                this.multp2Rocket.reset();
+                this.multishipExplode(this.multp2Rocket, this.ship01);
+            }
         }
     }
 
@@ -217,6 +303,9 @@ class Play extends Phaser.Scene {
         // create explosion at ship position
         let boom  = this.add.sprite(ship.x, ship.y, 'explosion').setOrigin(0,0);
         boom.anims.play('explode'); //play exploding animation
+        // trigger sound on explosion
+        let randomSoundKey = Phaser.Utils.Array.GetRandom(soundKeys); // randomly selects sound to play
+        this.sound.play(randomSoundKey);
         boom.on('animationcomplete', () => {    //callback after animation completes
             ship.reset();   // reser ship position
             ship.alpha = 1; // make ship visible again
@@ -225,12 +314,39 @@ class Play extends Phaser.Scene {
 
         // increment score and update ui
         this.p1Score += ship.points;
-        this.counter += 3;
         this.scoreLeft.text = this.p1Score;
+    }
+    // shipExplode()
+    // handles ship + multirocket collision event
+    multishipExplode(rocket, ship){
+        // MOD: New ship explosion noises and randomly plays 1/4
+        let soundKeys = ['sfx_explosion','sfx_explosion2', 'sfx_explosion3', 'sfx_explosion4'];
+        ship.alpha = 0; // make hit ship invisible
         
+        // create explosion at ship position
+        let boom  = this.add.sprite(ship.x, ship.y, 'explosion').setOrigin(0,0);
+        boom.anims.play('explode'); //play exploding animation
         // trigger sound on explosion
         let randomSoundKey = Phaser.Utils.Array.GetRandom(soundKeys); // randomly selects sound to play
         this.sound.play(randomSoundKey);
+        boom.on('animationcomplete', () => {    //callback after animation completes
+            ship.reset();   // reser ship position
+            ship.alpha = 1; // make ship visible again
+            boom.destroy(); // remove explosion sprite
+        });
+
+        // increment score and update ui
+        if(rocket.playerNum == 1){
+            this.p1Score += ship.points;
+            this.counter += 3;
+            this.scoreLeft.text = this.p1Score;
+        }
+        else if(rocket.playerNum == 2){
+            this.p2Score += ship.points;
+            this.counter += 3;
+            this.scoreRight.text = this.p2Score;
+        }
+
 
     }
 }
