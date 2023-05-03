@@ -9,7 +9,8 @@
 
 // Mods(10):
 // - four new sounds added which randomly trigger on explosion
-// -
+// - display time remaining on screen
+// - new title screen with art and menu music
 
 // Mods(15):
 //
